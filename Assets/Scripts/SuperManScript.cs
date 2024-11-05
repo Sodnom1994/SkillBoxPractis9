@@ -4,42 +4,42 @@ using UnityEngine;
 
 public class SuperManScript : MonoBehaviour
 {
-    private GameObject _superMan;
+    public GameObject superMan;
     public GameObject[] badGuys;
-    private Rigidbody[] _badGuysRigidBody;
 
-    private float _tick = 3f;
+    public Rigidbody[] badGuysRigidBody;
+    private Rigidbody _superManRigidBody;
+
+    private Vector3 _directionalAway;
+
+    private int _count = 2;
+
+    [SerializeField] private float _force = 35;
     private float _distance;
-    private float _force;
-    [SerializeField] private float _speed;
-
-    private ForceMode _forceMode; 
-
-    private void Start()
+    private float _speed = 0.05f;
+    private void Update()
     {
-        _superMan = GetComponent<GameObject>();
-        for (int i = 0; i < badGuys.Length; i++)
+        if (_count >= 0)
         {
-            badGuys[i] = GetComponent<GameObject>();
-            _badGuysRigidBody[i] = badGuys[i].GetComponent<Rigidbody>();
-            _distance = Vector3.Distance(_superMan.transform.position, badGuys[i].transform.position);
-            _superMan.transform.position = Vector3.MoveTowards(_superMan.transform.position, badGuys[i].transform.position, _speed);
-            if(_distance <=0.2f)
+            _distance = Vector3.Distance(superMan.transform.position, badGuys[_count].transform.position);
+            _directionalAway = badGuys[_count].transform.position - superMan.transform.position;
+            superMan.transform.LookAt(badGuys[_count].transform.position);
+            superMan.transform.position = Vector3.MoveTowards(superMan.transform.position, badGuys[_count].transform.position, _speed);
+            if (_distance < 0.1)
             {
-                //_badGuysRigidBody[i].AddForce()
+                badGuysRigidBody[_count].AddForce(_directionalAway.normalized * _force, ForceMode.Impulse);
+                _count--;
+            }
+        }
+        if (_count < 0)
+        {
+            Vector3 fly = new(0, 5, 0);
+            _superManRigidBody = superMan.GetComponent<Rigidbody>();
+            superMan.transform.position = Vector3.MoveTowards(superMan.transform.position, fly, _speed);
+            if (superMan.transform.position == fly)
+            {
+                _superManRigidBody.constraints = RigidbodyConstraints.FreezeAll;
             }
         }
     }
-    //void Update()
-    //{
-    //    _tick -= Time.deltaTime;
-    //    if (_tick <= 0)
-    //    {
-
-
-
-    //        _tick = 3f;
-    //    }
-
-    //}
 }

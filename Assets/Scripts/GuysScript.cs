@@ -17,7 +17,6 @@ public class GuysScript : MonoBehaviour
         for (int i = 0; i < badGuys.Length; i++)
         {
             goodGuys[i].transform.LookAt(badGuys[i].transform);
-
         }
     }
 }
